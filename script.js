@@ -1,5 +1,6 @@
 import * as caricaSalva from "./carica_salva";
-import { tipologie } from "./.gitignore/conf.json"
+import {tipologie} from './.gitignore/conf.json'
+
 
 let diz = {};
 const giorniSettimana = [
@@ -170,3 +171,14 @@ function selectTipologia(index) {
   Tipologia_selez = index;
   render();
 }
+function prevWeek() {
+  currentWeekOffset--;
+  render();
+}
+
+function nextWeek() {
+  currentWeekOffset++;
+  render();
+}
+
+carica();

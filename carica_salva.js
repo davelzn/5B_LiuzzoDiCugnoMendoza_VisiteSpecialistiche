@@ -1,5 +1,7 @@
 import { cacheToken, myKey } from "./.gitignore/conf.json"
 
+
+
 export function carica() {
     return fetch('https://ws.progettimolinari.it/cache/get', {
             headers: {
