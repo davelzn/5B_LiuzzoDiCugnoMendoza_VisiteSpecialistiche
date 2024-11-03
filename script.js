@@ -150,3 +150,22 @@ function SubmForm() {
             '<div class="alert alert-danger">Slot non disponibile. Riprova.</div>';
     }
 }
+
+function renderTipologie() {
+  let html = '<div class="tipologie-container mb-4">';
+  tipologieVisita.forEach((tipologia, index) => {
+    const isSelected = index === selectedTipologia;
+    html += `<button 
+              class="btn ${isSelected ? 'btn-primary' : 'btn-secondary'} mx-1" 
+              onclick="selectTipologia(${index})">
+              ${tipologia}
+             </button>`;
+  });
+  html += '</div>';
+  return html;
+}
+
+function selectTipologia(index) {
+  selectedTipologia = index;
+  render();
+}
