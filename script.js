@@ -169,3 +169,14 @@ function selectTipologia(index) {
   selectedTipologia = index;
   render();
 }
+function prevWeek() {
+  currentWeekOffset--;
+  render();
+}
+
+function nextWeek() {
+  currentWeekOffset++;
+  render();
+}
+
+carica();
