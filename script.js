@@ -59,8 +59,8 @@ function render() {
     html += '</tbody></table>';
     tableContainer.innerHTML = html;
 
-    document.getElementById('precBtn').onclick = prevWeek;
-    document.getElementById('succBtn').onclick = nextWeek;
+    document.getElementById('precBtn').onclick = precSett;
+    document.getElementById('succBtn').onclick = succSett;
 }
 
 
@@ -169,12 +169,12 @@ function selectTipologia(index) {
   selectedTipologia = index;
   render();
 }
-function prevWeek() {
+function precSett() {
   currentWeekOffset--;
   render();
 }
 
-function nextWeek() {
+function succSett() {
   currentWeekOffset++;
   render();
 }
