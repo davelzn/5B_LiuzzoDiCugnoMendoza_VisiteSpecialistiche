@@ -1,5 +1,6 @@
 import * as caricaSalva from "./carica_salva";
-import { tipologie } from "./.gitignore/conf.json"
+import {tipologie} from './.gitignore/conf.json'
+
 
 let diz = {};
 const giorniSettimana = [
