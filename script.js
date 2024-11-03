@@ -48,7 +48,7 @@ function render() {
     [8, 9, 10, 11, 12].forEach((ora) => {
         html += `<tr><td>${ora}</td>`;
         formattedDate.forEach(({ date }) => {
-            const key = `${date} ${tipologieVisita[selectedTipologia]} ${ora}`;
+            const key = `${date} ${tipologieVisita[Tipologia_selez]} ${ora}`;
             const disponibilita = diz[key] || 'Disponibile';
             html += `<td>${disponibilita}</td>`;
         });
@@ -129,7 +129,7 @@ function SubmForm() {
     const nominativo = document.getElementById('nominativo').value;
     const esitoDiv = document.getElementById('esito');
 
-    const key = `${tipologieVisita[selectedTipologia]}-${data}- ${ora}`;
+    const key = `${tipologieVisita[Tipologia_selez]}-${data}- ${ora}`;
     const disponibilita = diz[key];
 
     if (!disponibilita) {
@@ -153,9 +153,11 @@ function SubmForm() {
 function renderTipologie() {
   let html = '<div class="tipologie-container mb-4">';
   tipologieVisita.forEach((tipologia, index) => {
-    const isSelected = index === selectedTipologia;
+    let buttonClass = 'btn-secondary';
+    if (index === Tipologia_selez) {
+      buttonClass = 'btn-primary';      }
     html += `<button 
-              class="btn ${isSelected ? 'btn-primary' : 'btn-secondary'} mx-1" 
+              class="btn ${buttonClass} mx-1" 
               onclick="selectTipologia(${index})">
               ${tipologia}
              </button>`;
@@ -165,6 +167,6 @@ function renderTipologie() {
 }
 
 function selectTipologia(index) {
-  selectedTipologia = index;
+  Tipologia_selez = index;
   render();
 }
