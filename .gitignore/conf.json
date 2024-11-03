@@ -1,5 +1,6 @@
  {
      "tipologie": ["Cardiologia", "Psicologia", "Oncologia", "Ortopedia", "Neurologia"],
+     "settimana" :["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"],
      "cacheToken": "12891abd-4716-4766-922b-6e46eba36b4c",
-     "myKey": "visite"
+     "myKey": "visite1"
  }

@@ -1,19 +1,37 @@
-import * as caricaSalva from "./carica_salva";
-import {tipologie} from './.gitignore/conf.json'
-
-
 let diz = {};
-const giorniSettimana = [
-    'Domenica',
-    'Lunedì',
-    'Martedì',
-    'Mercoledì',
-    'Giovedì',
-    'Venerdì',
-    'Sabato',
-];
 const formContainer = document.getElementById('form-container');
 const tableContainer = document.getElementById('table-container');
+let currentWeekOffset = 0;
+let tipologiaSelez = 0;
+let myToken, myKey, tipologieVisita, giorniSettimana;
+
+fetch('./.gitignore/conf.json') // carica le variabili da conf.json
+  .then(response => {
+    if (!response.ok) {
+      console.log('Errore nel caricamento del file JSON');
+    }
+    return response.json();
+  })
+  .then(data => {
+    tipologieVisita = data.tipologie;
+    giorniSettimana = data.settimana;
+    myToken = data.cacheToken;
+    myKey = data.myKey;
+    //console.log(tipologieVisita)
+    //console.log(giorniSettimana)
+    //console.log(myKey)
+    //console.log(myToken)
+    carica();
+  })
+  .catch(error => console.error('Errore:', error));
+
+
+function selectTipologia(index) {
+  tipologiaSelez = index;
+  render();
+}
+window.selectTipologia = selectTipologia; //window rende la funzione globale
+
 
 function render() {
     let formattedDate = [];
@@ -23,7 +41,6 @@ function render() {
         const futureDate = moment().add(i + currentWeekOffset * 7, 'days');
         const dayIndex = futureDate.day();
 
-        // Considera solo i giorni lavorativi
         if (dayIndex !== 0 && dayIndex !== 6) {
             const dayName = giorniSettimana[dayIndex];
             formattedDate.push({
@@ -49,7 +66,7 @@ function render() {
     [8, 9, 10, 11, 12].forEach((ora) => {
         html += `<tr><td>${ora}</td>`;
         formattedDate.forEach(({ date }) => {
-            const key = `${date} ${tipologieVisita[selectedTipologia]} ${ora}`;
+          const key = `${tipologieVisita[tipologiaSelez]}-${date}-${ora}`;
             const disponibilita = diz[key] || 'Disponibile';
             html += `<td>${disponibilita}</td>`;
         });
@@ -63,8 +80,8 @@ function render() {
     document.getElementById('succBtn').onclick = succSett;
 }
 
-
-formContainer.innerHTML += `
+// Generazione della modale
+formContainer.innerHTML += `  
   <button id="apriBtn" class="btn btn-primary">
     Aggiungi Prenotazione
   </button>
@@ -98,7 +115,7 @@ formContainer.innerHTML += `
               <input type="text" class="form-control" id="nominativo" required>
             </div>
             <div id="esito" class="mt-2"></div>
-            <button type="submit" id="submit" class="btn btn-primary">Invia</button>
+            <button type="button" id="submit" class="btn btn-primary">Invia</button>
             <button type="button" id="cancelButton" class="btn btn-secondary">Annulla</button>
           </form>
         </div>
@@ -130,13 +147,13 @@ function SubmForm() {
     const nominativo = document.getElementById('nominativo').value;
     const esitoDiv = document.getElementById('esito');
 
-    const key = `${tipologieVisita[selectedTipologia]}-${data}- ${ora}`;
+    const key = `${tipologieVisita[tipologiaSelez]}-${data}-${ora}`;
     const disponibilita = diz[key];
 
     if (!disponibilita) {
         diz[key] = nominativo;
-        salva()
-            .then(() => {
+        salva().then(() => {
+              console.log(diz);
                 esitoDiv.innerHTML =
                     '<div class="alert alert-success">Prenotazione aggiunta con successo!</div>';
                 render();
@@ -154,9 +171,9 @@ function SubmForm() {
 function renderTipologie() {
   let html = '<div class="tipologie-container mb-4">';
   tipologieVisita.forEach((tipologia, index) => {
-    const isSelected = index === selectedTipologia;
+    let buttonClass = index === tipologiaSelez ? 'btn-primary' : 'btn-secondary';
     html += `<button 
-              class="btn ${isSelected ? 'btn-primary' : 'btn-secondary'} mx-1" 
+              class="btn ${buttonClass} mx-1" 
               onclick="selectTipologia(${index})">
               ${tipologia}
              </button>`;
@@ -165,10 +182,7 @@ function renderTipologie() {
   return html;
 }
 
-function selectTipologia(index) {
-  selectedTipologia = index;
-  render();
-}
+
 function precSett() {
   currentWeekOffset--;
   render();
@@ -180,3 +194,44 @@ function succSett() {
 }
 
 carica();
+
+
+function carica() {
+  return fetch('https://ws.cipiaceinfo.it/cache/get', {
+    headers: {
+      'Content-Type': 'application/json',
+      key: myToken,
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      key: myKey,
+    }),
+  })
+    .then((r) => r.json())
+    .then((r) => {
+      console.log('Dati caricati:', r.result);
+      diz = r.result || {};
+      render();
+    })
+    .catch((err) => console.log('Errore durante il caricamento:', err));
+}
+
+function salva() {
+  return fetch('https://ws.cipiaceinfo.it/cache/set', {
+    headers: {
+      'Content-Type': 'application/json',
+      key: myToken,
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      key: myKey,
+      value: diz,
+    }),
+  })
+    .then((r) => r.json())
+    .then((r) => {
+      console.log('Dati salvati:', r);
+      return r;
+    })
+    .catch((err) => console.log('Errore durante il salvataggio:', err));
+}
