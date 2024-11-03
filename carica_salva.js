@@ -1,11 +1,10 @@
-//import myToken, myKey from  .....
-
+import { cacheToken, myKey } from "./.gitignore/conf.json"
 
 export function carica() {
     return fetch('https://ws.progettimolinari.it/cache/get', {
             headers: {
                 'Content-Type': 'application/json',
-                key: myToken,
+                key: cacheToken,
             },
             method: 'POST',
             body: JSON.stringify({
