@@ -205,3 +205,9 @@ function succSett() {
   currentWeekOffset++;
   render();
 }
+
+setInterval(()=>{
+  carica().then(()=>{
+    render();
+  })
+},300000);
