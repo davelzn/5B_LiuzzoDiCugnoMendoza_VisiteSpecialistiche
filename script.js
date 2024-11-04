@@ -57,22 +57,27 @@ function render() {
 
     let html = renderTipologie();
     html += '<div class="mb-2">';
-    html += `<button id="precBtn" class="btn btn-light">Settimana Precedente</button>`;
-    html += `<button id="succBtn" class="btn btn-light">Settimana Successiva</button>`;
+    html += `<button id="precBtn" class="btn btn-outline-success">Settimana Precedente</button>`;
+    html += `<button id="succBtn" class="btn btn-outline-success">Settimana Successiva</button>`;
     html += '</div>';
-    html += '<table class="table table-bordered"><thead><tr><th>Ora</th>';
+    html += '<table class="table table-bordered table table-striped"><thead><tr><th>Ora</th>';
 
     formattedDate.forEach(({ day, date }) => {
         html += `<th>${day} - ${date}</th>`;
     });
-    html += '</tr></thead><tbody>';
+    html += '</tr></thead><tbody class="table-group-divider">';
 
     [8, 9, 10, 11, 12].forEach((ora) => {
         html += `<tr><td>${ora}</td>`;
         formattedDate.forEach(({ date }) => {
           const key = `${tipologieVisita[tipologiaSelez]}-${date}-${ora}`;
           const disponibilita = diz[key] || 'Disponibile';
-          html += `<td>${disponibilita}</td>`;
+          if (disponibilita !== "Disponibile"){
+            html += `<td class="table-info">${disponibilita}</td>`;
+          } else {
+            html += `<td>${disponibilita}</td>`;
+          }
+          
         });
         html += '</tr>';
     });
@@ -86,16 +91,16 @@ function render() {
 
 // Generazione della modale
 formContainer.innerHTML += `  
-  <button id="apriBtn" class="btn btn-primary">
+  <button id="apriBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
     Aggiungi Prenotazione
   </button>
 
-  <div id="prenotazioneModal" class="modal" style="display: none;">
+  <div id="prenotazioneModal" class="modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Aggiungi Prenotazione</h5>
-          <button id="chiudiBtn" class="close">&times;</button>
+          <h1 class="modal-title fs-5">Aggiungi Prenotazione</h1>
+          <button id="chiudiBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <form id="prenotazioneForm">
