@@ -1,4 +1,6 @@
-let diz = {};
+import { carica,salva,diz } from "./carica_salva.js";
+
+//  let diz = {};
 const formContainer = document.getElementById('form-container');
 const tableContainer = document.getElementById('table-container');
 let currentWeekOffset = 0;
@@ -21,7 +23,9 @@ fetch('./.gitignore/conf.json') // carica le variabili da conf.json
     //console.log(giorniSettimana)
     //console.log(myKey)
     //console.log(myToken)
-    carica();
+    carica(myToken, myKey).then(()=>{
+      render();
+    });
   })
   .catch(error => console.error('Errore:', error));
 
@@ -67,8 +71,8 @@ function render() {
         html += `<tr><td>${ora}</td>`;
         formattedDate.forEach(({ date }) => {
           const key = `${tipologieVisita[tipologiaSelez]}-${date}-${ora}`;
-            const disponibilita = diz[key] || 'Disponibile';
-            html += `<td>${disponibilita}</td>`;
+          const disponibilita = diz[key] || 'Disponibile';
+          html += `<td>${disponibilita}</td>`;
         });
         html += '</tr>';
     });
@@ -147,24 +151,33 @@ function SubmForm() {
     const nominativo = document.getElementById('nominativo').value;
     const esitoDiv = document.getElementById('esito');
 
+    const data2 = moment(data)
+    const dayOfWeek = data2.day();
+    //console.log(data2)
+
+    if (dayOfWeek === 0 || dayOfWeek === 6) { // 0 = Domenica, 6 = Sabato
+      esitoDiv.innerHTML =
+        '<div class="alert alert-warning">La clinica è chiusa durante il weekend. Seleziona un giorno della settimana.</div>';
+      return; 
+    }
     const key = `${tipologieVisita[tipologiaSelez]}-${data}-${ora}`;
     const disponibilita = diz[key];
 
     if (!disponibilita) {
         diz[key] = nominativo;
-        salva().then(() => {
+      salva(myToken, myKey).then(() => {
               console.log(diz);
-                esitoDiv.innerHTML =
-                    '<div class="alert alert-success">Prenotazione aggiunta con successo!</div>';
+                esitoDiv.innerHTML = '<div class="alert alert-success">Prenotazione aggiunta con successo!</div>';
+                document.getElementById('data').value = "";
+                document.getElementById('ora').value = "";
+                document.getElementById('nominativo').value = "";
                 render();
             })
             .catch(() => {
-                esitoDiv.innerHTML =
-                    '<div class="alert alert-danger">Errore durante il salvataggio. Riprova.</div>';
+                esitoDiv.innerHTML ='<div class="alert alert-danger">Errore durante il salvataggio. Riprova.</div>';
             });
     } else {
-        esitoDiv.innerHTML =
-            '<div class="alert alert-danger">Slot non disponibile. Riprova.</div>';
+        esitoDiv.innerHTML ='<div class="alert alert-danger">Slot non disponibile. Riprova.</div>';
     }
 }
 
@@ -191,47 +204,4 @@ function precSett() {
 function succSett() {
   currentWeekOffset++;
   render();
-}
-
-carica();
-
-
-function carica() {
-  return fetch('https://ws.cipiaceinfo.it/cache/get', {
-    headers: {
-      'Content-Type': 'application/json',
-      key: myToken,
-    },
-    method: 'POST',
-    body: JSON.stringify({
-      key: myKey,
-    }),
-  })
-    .then((r) => r.json())
-    .then((r) => {
-      console.log('Dati caricati:', r.result);
-      diz = r.result || {};
-      render();
-    })
-    .catch((err) => console.log('Errore durante il caricamento:', err));
-}
-
-function salva() {
-  return fetch('https://ws.cipiaceinfo.it/cache/set', {
-    headers: {
-      'Content-Type': 'application/json',
-      key: myToken,
-    },
-    method: 'POST',
-    body: JSON.stringify({
-      key: myKey,
-      value: diz,
-    }),
-  })
-    .then((r) => r.json())
-    .then((r) => {
-      console.log('Dati salvati:', r);
-      return r;
-    })
-    .catch((err) => console.log('Errore durante il salvataggio:', err));
 }
