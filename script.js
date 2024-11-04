@@ -89,7 +89,7 @@ function render() {
     document.getElementById('succBtn').onclick = succSett;
 }
 
-// Generazione della modale
+// Generazione  html della modale
 formContainer.innerHTML += `  
   <button id="apriBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
     Aggiungi Prenotazione
@@ -132,9 +132,9 @@ formContainer.innerHTML += `
     </div>
   </div>
 `;
-
+//bottoni della modale
 document.getElementById('apriBtn').onclick = () => {
-    document.getElementById('prenotazioneModal').style.display = 'block';
+    document.getElementById('prenotazioneModal').style.display = 'block'; 
 };
 
 document.getElementById('chiudiBtn').onclick = () => {
@@ -150,7 +150,7 @@ document.getElementById("submit").onclick = () => {
 }
 
 
-function SubmForm() {
+function SubmForm() { //componente form 
     const data = document.getElementById('data').value;
     const ora = document.getElementById('ora').value;
     const nominativo = document.getElementById('nominativo').value;
